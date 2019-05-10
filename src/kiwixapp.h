@@ -5,6 +5,7 @@
 #include "contentmanager.h"
 #include "mainwindow.h"
 #include "kiwix/downloader.h"
+#include <kiwix/kiwixserve.h>
 #include "tabbar.h"
 #include "tocsidebar.h"
 #include "urlschemehandler.h"
@@ -85,6 +86,8 @@ public slots:
     void setSideBar(SideBarType type);
     void toggleSideBar(KiwixApp::SideBarType type);
     void printPage();
+    void runServer();
+    void shutdownServer();    
 
 protected:
     void createAction();
@@ -100,6 +103,7 @@ private:
     TabBar* mp_tabWidget;
     SideBarType m_currentSideType;
     QErrorMessage* mp_errorDialog;
+    kiwix::KiwixServe* mp_server;
 
     QAction*     mpa_actions[MAX_ACTION];
 };

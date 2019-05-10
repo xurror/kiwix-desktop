@@ -29,7 +29,8 @@ KiwixApp::KiwixApp(int& argc, char *argv[])
     : QApplication(argc, argv),
       m_library(),
       mp_downloader(createDownloader()),
-      m_manager(&m_library, mp_downloader)
+      m_manager(&m_library, mp_downloader),
+      mp_server(new kiwix::KiwixServe())
 {
     m_qtTranslator.load(QLocale(), "qt", "_",
                         QLibraryInfo::location(QLibraryInfo::TranslationsPath));
@@ -101,6 +102,10 @@ KiwixApp::KiwixApp(int& argc, char *argv[])
 
 KiwixApp::~KiwixApp()
 {
+    if (mp_server) {
+        mp_server->shutDown();
+        delete mp_server;
+    }
     if (mp_downloader) {
         mp_downloader->close();
         delete mp_downloader;
@@ -197,6 +202,17 @@ void KiwixApp::toggleSideBar(KiwixApp::SideBarType type) {
     setSideBar(type);
 }
 
+void KiwixApp::runServer()
+{
+    mp_server->run();
+}
+
+void KiwixApp::shutdownServer()
+{
+    qInfo() << "shutdown";
+    mp_server->shutDown();
+}
+
 void KiwixApp::openRandomUrl(bool newTab)
 {
     auto zimId = mp_tabWidget->currentZimId();
@@ -251,7 +267,7 @@ void KiwixApp::createAction()
 {
     CREATE_ACTION_ICON(KiwixServeAction, "share", tr("Local Kiwix Server"));
     SET_SHORTCUT(KiwixServeAction, QKeySequence(Qt::CTRL+Qt::Key_I));
-    HIDE_ACTION(KiwixServeAction);
+    // HIDE_ACTION(KiwixServeAction);
 
     CREATE_ACTION_ICON(RandomArticleAction, "random", tr("Random Article"));
     SET_SHORTCUT(RandomArticleAction, QKeySequence(Qt::CTRL+Qt::Key_R));
