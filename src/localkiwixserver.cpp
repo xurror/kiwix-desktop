@@ -8,6 +8,14 @@ LocalKiwixServer::LocalKiwixServer(QWidget *parent) :
     ui(new Ui::LocalKiwixServer)
 {
     ui->setupUi(this);
+
+    QFile styleFile(":/css/localServer.css");
+    styleFile.open(QIODevice::ReadOnly);
+    auto byteContent = styleFile.readAll();
+    styleFile.close();
+    QString style(byteContent);
+    setStyleSheet(style);
+
     connect(ui->KiwixServerButton, SIGNAL(clicked()), this, SLOT(runOrStopServer()));
     connect(ui->OpenInBrowserButton, SIGNAL(clicked()), this, SLOT(openInBrowser()));
     const QHostAddress &localhost = QHostAddress(QHostAddress::LocalHost);
